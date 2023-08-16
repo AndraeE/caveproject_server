@@ -1,5 +1,4 @@
 const asyncHandler = require('express-async-handler')
-
 const Strain = require('../models/strainModel')
 const User = require('../models/userModel')
 
@@ -11,6 +10,7 @@ const getStrains = asyncHandler( async (req, res) => {
 
   res.status(200).json(strains)
 })
+
 
 // @desc    get a strains by user/author
 // @route   GET /api/strains/collection
@@ -61,6 +61,7 @@ const addStrain = asyncHandler( async (req, res) => {
 	}
 })
 
+
 // @desc    Delete a strain
 // @route   DELETE /api/strains/:id
 // @access  Public
@@ -81,6 +82,7 @@ const deleteStrain = asyncHandler( async (req, res) => {
   res.status(200).json(strain)
 })
 
+
 // @desc    Update a strain
 // @route   PUT /api/strains/:id
 // @access  Public
@@ -97,6 +99,7 @@ const updateStrain = asyncHandler( async (req, res) => {
 
   res.status(200).json(updatedStrain)
 })
+
 
 module.exports = {
   getStrains,

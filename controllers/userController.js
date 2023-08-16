@@ -12,18 +12,18 @@ const signupUser = asyncHandler ( async (req, res) => {
 	if(!name || !email || !password || !user_level) {
 		res.status(400).json({error: 'Add required fields'})
 	}
-
+	
 	// Check if user already exists
 	const checkUserExists = await User.findOne({email})
 
 	if(checkUserExists) {
 		res.status(400).json({error: 'User already exists'})
 	}
-
+	
 	// Password hashing
 	const salt = await bcrypt.genSalt(10)
 	const hashedPassword = await bcrypt.hash(password, salt)
-
+	
 	// Create User
 	const user = await User.create({
 		name,
@@ -42,6 +42,7 @@ const signupUser = asyncHandler ( async (req, res) => {
 		res.status(400).json({ message: 'Sign up failed'})
 	}
 })
+
 
 // @desc    Login/authenticate user
 // @route   POST /api/users/login
@@ -63,6 +64,7 @@ const loginUser = asyncHandler ( async (req, res) => {
 	}
 })
 
+
 // @desc    Get user data
 // @route   GET /api/users/me
 // @access  Private
@@ -81,6 +83,7 @@ const generateToken = (id) => {
 		expiresIn: '15d',
 	})
 }
+
 
 module.exports = {
   signupUser,
