@@ -1,10 +1,11 @@
 // routes/ strainRoutes
-
 const express = require('express');
 const router = express.Router();
+const { auth } = require('../middleware/auth')
 
 const {
     getStrains,
+    getStrainByUser,
     getStrain,
     addStrain,
     deleteStrain,
@@ -14,16 +15,19 @@ const {
 // GET all strain collection
 router.get('/', getStrains)
 
+// GET strains by user
+router.get('/collection', auth,  getStrainByUser)
+
 // GET a strain
-router.get('/:id', getStrain)
+router.get('/:id', auth,  getStrain)
 
 // POST a new strain
-router.post('/', addStrain)
+router.post('/', auth, addStrain)
 
 // DELETE a strain
-router.delete('/:id', deleteStrain)
+router.delete('/:id', auth, deleteStrain)
 
 // UPDATE a strain
-router.patch('/:id', updateStrain)
+router.put('/:id', auth, updateStrain)
 
 module.exports = router
