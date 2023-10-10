@@ -1,42 +1,53 @@
 // models/Strain.js
 const mongoose = require('mongoose');
 
-const StrainSchema = mongoose.Schema({
+const StrainSchema = mongoose.Schema(
+	{
+		user : { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
 
-	user : { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
+		// Taxonomic Details
+		strain_name : String, 
+		type_strain : { type : Boolean, default : false},
+		scientific_name : String,
+		
+		domain : String,
+		phylum : String,
+		class_name : String,
+		order : String,
+		family : String,
+		genus : String,
+		species : String,
 
-	// Taxonomic Details
-  strain_name : String, 
-  type_strain : { type : Boolean, default : false},
-  scientific_name : String,
-	
-	domain : String,
-	phylum : String,
-	class_name : String,
-	order : String,
-	family : String,
-	genus : String,
-	species : String,
+		// Isolation source Details
+		isolation_source : String,	//same with location information
+		sampling_site : String,
+		sampling_point : String,
+		sample_type : String,
+		host_species : String,
+		city_province : String,
+		location_abbr : String,
+		location_latitude : Number,
+		location_longitude : Number,
+		miso_categories : Array,
+		
 
-	// Isolation source Details
-	isolation_source : String,
-	host_species : String,
-	cave_name : String,
-	city_province : String,
-	location_latitude : Number,
-	location_longitude : Number,
-	categories : Array,
-	
+		// Date Details
+		date_uploaded : { type : Date, default: Date.now },
+		date_updated : { type : Date, default: Date.now },
 
-	// Date Details
-	date_uploaded : { type : Date, default: Date.now },
-	date_updated : { type : Date, default: Date.now },
-
-	// Other Details
-	// user_id : Schema.ObjectId,
-	// privacy : Boolean,
-	// reference_list : String,
-
-});
+		// Strain Identifier
+		// accession_number: String,
+		// id_source: String,
+		// id_isolate: String,
+		// custom_id: String,
+		// collection: String,
+		// institution: String,
+		// database_id: String,
+		// project_name: String,
+	},
+	{
+		timestamps : true,
+	}
+);
 
 module.exports = mongoose.model('Strain', StrainSchema);
