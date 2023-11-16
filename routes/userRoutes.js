@@ -1,16 +1,27 @@
 // routes/userRoutes
 const express = require('express');
 const router = express.Router();
-const { auth } = require('../middleware/auth')
+const cors = require('cors')
+// const { auth } = require('../middleware/auth')
 const {
-    signupUser,
-    loginUser,
-    getUser
+	test,
+  signupUser,
+  loginUser,
+  getUser
 } = require('../controllers/userController');
 
+// middleware
+router.use(
+	cors({
+		credentials: true,
+		origin: 'http://localhost:5173'
+	})
+)
+
+router.get('/', test)
 router.post('/', signupUser)
 router.post('/login', loginUser)
-router.get('/me', auth, getUser)
+router.get('/me', getUser)
 
 
 module.exports = router

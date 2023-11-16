@@ -3,44 +3,63 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
 
+// @desc    for testing purposes
+// @route   GET /api/users
+// @access  Public
+const test = (req,res) => {
+	res.json('Test is working.')
+}
+
 // @desc    Sign up NEW user
 // @route   POST /api/users
 // @access  Public
 const signupUser = asyncHandler ( async (req, res) => {
-  const { name, email, password, user_level } = req.body
-  
-	if(!name || !email || !password || !user_level) {
-		res.status(400).json({error: 'Add required fields'})
-	}
-	
-	// Check if user already exists
-	const checkUserExists = await User.findOne({email})
+	try {
+		const { name, email, password, institution, address, user_level } = req.body
+		
+		// Check required fields
+		if(!name || !email || !password || !user_level) {
+			res.json({error: 'Add required fields'})
+		}
+		
+		// Check password length
+		if(password.length < 6) {
+			res.json({ error: 'Password should be at least 6 characters long' })
+		}
+		
+		// Check if user already exists
+		const exist = await User.findOne({email})
 
-	if(checkUserExists) {
-		res.status(400).json({error: 'User already exists'})
-	}
-	
-	// Password hashing
-	const salt = await bcrypt.genSalt(10)
-	const hashedPassword = await bcrypt.hash(password, salt)
-	
-	// Create User
-	const user = await User.create({
-		name,
-		email,
-		password: hashedPassword,
-		user_level
-	})
-
-	if(user) {
-		res.status(201).json({
-			user,
-			token: generateToken(user._id),
-			message: 'User created'
+		if(exist) {
+			res.json({error: 'Email already exists'})
+		}
+		
+		// Password hashing
+		const salt = await bcrypt.genSalt(10)
+		const hashedPassword = await bcrypt.hash(password, salt)
+		
+		// Create User
+		const user = await User.create({
+			name,
+			email,
+			password: hashedPassword,
+			institution,
+			address,
+			user_level
 		})
-	} else {
-		res.status(400).json({ message: 'Sign up failed'})
+
+		if(user) {
+			res.json({
+				token: generateToken(user._id),
+				message: 'User created'
+			})
+		} else {
+			res.json({ message: 'Sign up failed'})
+		}
+	} catch (error) {
+		console.log(error)
 	}
+  
 })
 
 
@@ -85,6 +104,7 @@ const generateToken = (id) => {
 
 
 module.exports = {
+	test,
   signupUser,
   loginUser,
   getUser
