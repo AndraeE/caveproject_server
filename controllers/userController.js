@@ -19,7 +19,7 @@ const signupUser = asyncHandler ( async (req, res) => {
 		
 		// Check required fields
 		if(!name || !email || !password || !user_level) {
-			res.json({error: 'Add required fields'})
+			res.json({ error: 'Add required fields' })
 		}
 		
 		// Check password length
@@ -31,7 +31,7 @@ const signupUser = asyncHandler ( async (req, res) => {
 		const exist = await User.findOne({email})
 
 		if(exist) {
-			res.json({error: 'Email already exists'})
+			res.json({ error: 'Email already exists' })
 		}
 		
 		// Password hashing
@@ -51,10 +51,10 @@ const signupUser = asyncHandler ( async (req, res) => {
 		if(user) {
 			res.json({
 				token: generateToken(user._id),
-				message: 'User created'
+				message: 'User account successfuly created'
 			})
 		} else {
-			res.json({ message: 'Sign up failed'})
+			res.json({ message: 'Sign up failed' })
 		}
 	} catch (error) {
 		console.log(error)
@@ -67,19 +67,28 @@ const signupUser = asyncHandler ( async (req, res) => {
 // @route   POST /api/users/login
 // @access  Public
 const loginUser = asyncHandler ( async (req, res) => {
-  const { email, password } = req.body
+	try {
+		const { email, password } = req.body
 
-	// Check User email
-	const user = await User.findOne({ email })
+		// Check if user (email) exists
+		const user = await User.findOne({ email })
+		if(!user) {
+			res.json({ error: 'No user found' })
+		}
 
-	if(user && ( await bcrypt.compare(password, user.password))) {
-		res.status(201).json({
-			user,
-			token: generateToken(user._id),
-			message: 'User log in'
-		})
-	} else {
-		res.status(400).json({ message: 'Invalid credentials' })
+		// Check if passwords match
+		if( await bcrypt.compare(password, user.password) ) {
+			res.json({
+				user,
+				token: generateToken(user._id),
+				message: 'Logged in successfuly'
+			})
+		} else {
+			res.json({ error: 'Invalid credentials' })
+		}
+
+	} catch (error) {
+		console.log(error)
 	}
 })
 

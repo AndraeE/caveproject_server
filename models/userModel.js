@@ -8,7 +8,7 @@ const UserSchema = new mongoose.Schema(
     password : { type: String, required: true },
     institution : { type: String },
     address : { type: String },
-    user_level : { type: String },
+    user_level : { type: String, required: true },
   },
   {
     timestamps: true,
