@@ -96,7 +96,7 @@ const loginUser = asyncHandler ( async (req, res) => {
 				email: user.email,
 				user_level: user.user_level,
 				token: _token,
-				message: 'Logged in successfuly'
+				message: 'Logged in successfuly',
 			})
 		} else {
 			return res.json({ error: 'Invalid credentials' })
@@ -113,9 +113,9 @@ const loginUser = asyncHandler ( async (req, res) => {
 const logoutUser = asyncHandler ( async (req, res) => {
 	res.clearCookie('jwt', {
 		httpOnly: true,
-		expires: new Date(0),
+		sameSite: 'None',
+		secure: true,
 	})
-	
 	return res.json({ message: 'Logged out successfully' });
 })
 
@@ -123,15 +123,20 @@ const logoutUser = asyncHandler ( async (req, res) => {
 // @route   GET /users/profile
 // @access  Private
 const getUser = asyncHandler ( async (req, res) => {
-	// const user = await User.findOne({ email })
-	const user = await User.findById(req.user._id);
+	try {
+		// const user = await User.findOne({ email })
+		const user = await User.findById(req.user._id);
 
-	if(user) {
-		return res.json({
-      user
-    })
-	} else {
-		return res.json({ error: 'User not found' })
+		if(user) {
+			return res.json({
+				user
+			})
+		} else {
+			return res.json({ error: 'User not found' })
+		}
+	} catch (error) {
+		console.log(error)
+		res.json({ error: error.message })
 	}
 })
 
