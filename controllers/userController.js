@@ -2,16 +2,17 @@ const User = require('../models/userModel')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const asyncHandler = require('express-async-handler')
+const { generateToken } = require('../utils/helpers')
 
 // @desc    for testing purposes
-// @route   GET /api/users
+// @route   GET /users
 // @access  Public
 const test = (req,res) => {
 	res.json('Test is working.')
 }
 
 // @desc    Sign up NEW user
-// @route   POST /api/users
+// @route   POST /users
 // @access  Public
 const signupUser = asyncHandler ( async (req, res) => {
 	try {
@@ -19,19 +20,22 @@ const signupUser = asyncHandler ( async (req, res) => {
 		
 		// Check required fields
 		if(!name || !email || !password || !user_level) {
-			res.json({ error: 'Add required fields' })
+			return res.json({ error: 'Add required fields' })
+			// throw new Error('Add required fields')
 		}
 		
 		// Check password length
 		if(password.length < 6) {
-			res.json({ error: 'Password should be at least 6 characters long' })
+			return res.json({ error: 'Password should be at least 6 characters long' })
+			// throw new Error('Password should be at least 6 characters long')
 		}
 		
 		// Check if user already exists
 		const exist = await User.findOne({email})
 
 		if(exist) {
-			res.json({ error: 'Email already exists' })
+			return res.json({ error: 'Email already exists' })
+			// throw new Error('Email already exists')
 		}
 		
 		// Password hashing
@@ -49,12 +53,18 @@ const signupUser = asyncHandler ( async (req, res) => {
 		})
 
 		if(user) {
-			res.json({
-				token: generateToken(user._id),
+			const _token = generateToken(res, user._id)
+
+			return res.json({
+				_id: user._id,
+				name: user.name,
+				email: user.email,
+				user_level: user.user_level,
+				token: _token,
 				message: 'User account successfuly created'
 			})
 		} else {
-			res.json({ message: 'Sign up failed' })
+			return res.json({ message: 'Sign up failed' })
 		}
 	} catch (error) {
 		console.log(error)
@@ -64,7 +74,7 @@ const signupUser = asyncHandler ( async (req, res) => {
 
 
 // @desc    Login/authenticate user
-// @route   POST /api/users/login
+// @route   POST /users/login
 // @access  Public
 const loginUser = asyncHandler ( async (req, res) => {
 	try {
@@ -73,18 +83,23 @@ const loginUser = asyncHandler ( async (req, res) => {
 		// Check if user (email) exists
 		const user = await User.findOne({ email })
 		if(!user) {
-			res.json({ error: 'No user found' })
+			return res.json({ error: 'No user found' })
 		}
 
 		// Check if passwords match
 		if( await bcrypt.compare(password, user.password) ) {
-			res.json({
-				user,
-				token: generateToken(user._id),
+			const _token = generateToken(res, user._id)
+
+			return res.json({
+				_id: user._id,
+				name: user.name,
+				email: user.email,
+				user_level: user.user_level,
+				token: _token,
 				message: 'Logged in successfuly'
 			})
 		} else {
-			res.json({ error: 'Invalid credentials' })
+			return res.json({ error: 'Invalid credentials' })
 		}
 
 	} catch (error) {
@@ -92,29 +107,39 @@ const loginUser = asyncHandler ( async (req, res) => {
 	}
 })
 
+// @desc    Logout user, clear cookies
+// @route   POST /users/logout
+// @access  Private
+const logoutUser = asyncHandler ( async (req, res) => {
+	res.clearCookie('jwt', {
+		httpOnly: true,
+		expires: new Date(0),
+	})
+	
+	return res.json({ message: 'Logged out successfully' });
+})
 
 // @desc    Get user data
-// @route   GET /api/users/me
+// @route   GET /users/profile
 // @access  Private
 const getUser = asyncHandler ( async (req, res) => {
 	// const user = await User.findOne({ email })
-  
-	res.status(200).json(
-		req.user
-	)
-})
+	const user = await User.findById(req.user._id);
 
-// JWT Generation
-const generateToken = (id) => {
-	return jwt.sign({ id }, process.env.JWT_SECRET_CODE, {
-		expiresIn: '15d',
-	})
-}
+	if(user) {
+		return res.json({
+      user
+    })
+	} else {
+		return res.json({ error: 'User not found' })
+	}
+})
 
 
 module.exports = {
 	test,
   signupUser,
   loginUser,
+	logoutUser,
   getUser
 }
