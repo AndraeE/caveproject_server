@@ -1,39 +1,36 @@
 // models/Strain.js
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
+
 
 const StrainSchema = mongoose.Schema(
 	{
-		user : { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
+		user: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
+		hide: { type: Boolean, default: false },
 
 		// Taxonomic Details
-		strain_name : String, 
-		type_strain : { type : Boolean, default : false},
-		scientific_name : String,
+		strain_name: String, 
+		type_strain: { type: Boolean, default: false },
+		scientific_name: String,
 		
-		domain : String,
-		phylum : String,
-		class_name : String,
-		order : String,
-		family : String,
-		genus : String,
-		species : String,
+		domain: String,
+		phylum: String,
+		class_name: String,
+		order: String,
+		family: String,
+		genus: String,
+		species: String,
 
 		// Isolation source Details
-		isolation_source : String,	//same with location information
-		sampling_site : String,
-		sampling_point : String,
-		sample_type : String,
-		host_species : String,
-		city_province : String,
-		location_abbr : String,
-		location_latitude : Number,
-		location_longitude : Number,
-		miso_categories : Array,
-		
-
-		// Date Details
-		date_uploaded : { type : Date, default: Date.now },
-		date_updated : { type : Date, default: Date.now },
+		isolation_source: String,	//same with location information
+		sampling_site: String,
+		sampling_point: String,
+		sample_type: String,
+		host_species: String,
+		city_province: String,
+		location_abbr: String,
+		location_latitude: Number,
+		location_longitude: Number,
+		miso_categories: Array,
 
 		// Strain Identifier
 		// accession_number: String,
@@ -46,7 +43,7 @@ const StrainSchema = mongoose.Schema(
 		// project_name: String,
 	},
 	{
-		timestamps : true,
+		timestamps: true,
 	}
 );
 

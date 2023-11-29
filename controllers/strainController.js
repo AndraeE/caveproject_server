@@ -2,13 +2,30 @@ const asyncHandler = require('express-async-handler')
 const Strain = require('../models/strainModel')
 const User = require('../models/userModel')
 
-// @desc    Get strains
-// @route   GET /api/strains
+// @desc    Get all strains
+// @route   GET /strains
 // @access  Public
-const getStrains = asyncHandler( async (req, res) => {
-  const strains = await Strain.find()
+const getAllStrains = asyncHandler( async (req, res) => {
+  try {
+    const strains = await Strain.find().lean()
 
-  res.status(200).json(strains)
+    if(!strains?.length) {
+      return res.json({ message: 'No strains found' })
+    }
+
+    // Add user's(contributor) name to each strains before sending the response 
+    const strainsWithUser = await Promise.all(strains.map(async (strain) => {
+      const user = await User.findById(strain.user).lean().exec()
+      return { ...strain, contributor: user.name }
+    }))
+
+    res.json(strainsWithUser)
+
+  } catch (error) {
+    console.log(error)
+    res.json({ error: error.message })
+  }
+  
 })
 
 
@@ -16,93 +33,116 @@ const getStrains = asyncHandler( async (req, res) => {
 // @route   GET /api/strains/collection
 // @access  Private
 const getStrainByUser = asyncHandler( async (req, res) => {
-  const strains = await Strain.find({ user: req.user.id })
+  try {
+    const strains = await Strain.find({ user: req.user }).lean()
 
-  if (!strains) {
-    return res.status(404).json({error: 'No strains found!'})
+    if (!strains) {
+      return res.json({ message: 'No strains found' })
+    }
+
+    res.json(strains)
+    
+  } catch (error) {
+    console.log(error)
+    res.json({ error: error.message })
   }
-
-  res.status(200).json(strains)
 })
 
 
 // @desc    get a single strain
 // @route   GET /api/strains/id
-// @access  Public
+// @access  Private
 const getStrain = asyncHandler( async (req, res) => {
-  const strain = await Strain.findById(req.params.id, req.body)
+  try {
+    const strain = await Strain.findById(req.params.id)
 
-  if (!strain) {
-    return res.status(404).json({error: 'Strain not found!'})
+    if (!strain) {
+      return res.json({ message: 'Strain not found!' })
+    }
+
+    res.json({ strain, message:`Get strain ${req.params.id}`})
+  } catch (error) {
+    console.log(error)
+    res.json({ error: error.message })
   }
-
-  res.status(200).json({strain, message:`Get strain ${req.params.id}`})
+  
 })
 
 
-// @desc    add new strain
-// @route   POST /api/strains
-// @access  Public
+// @desc    create/add new strain
+// @route   POST /strains
+// @access  Private
 const addStrain = asyncHandler( async (req, res) => {
-  const data = req.body
+  try {
+    const data = req.body
 
-  const strain = await Strain.create({
-    ...data,
-    user: req.user.id
-  })
+    const strain = await Strain.create({
+      ...data,
+      user: req.user._id
+    })
 
-  if(strain) {
-    res.status(201).json({
-			strain,
-			message: 'Successfully added strain'
-		})
-	} else {
-		res.status(400).json({ message: 'Strain creation failed'})
-	}
+    
+    res.json({
+      strain,
+      message: 'New strain added'
+    })
+  } catch (error) {
+    console.log(error)
+    res.json({ error: error.message })
+  }
 })
 
 
 // @desc    Delete a strain
-// @route   DELETE /api/strains/:id
-// @access  Public
+// @route   DELETE /strains/:id
+// @access  Private
 const deleteStrain = asyncHandler( async (req, res) => {
-  const strain = await Strain.findById(req.params.id)
+  try {
+    const strain = await Strain.findByIdAndDelete(req.params.id)
 
-  if(!strain) {
-    return res.status(400).json({error: 'Strain not found!'})
+    // if(!strain) {
+    //   return res.json({ message: 'Strain not found' })
+    // }
+
+    res.json({
+      strain,
+      message: 'Strain deleted'
+    })
+  } catch (error) {
+    console.log(error)
+    res.json({ error: error.message })
   }
-
-  // Checks the logged in user matches the strain user
-  if (strain.user.toString() !== req.user.id) {
-    res.status(401).json({ message: 'User not authorized' })
-  }
-
-  await strain.remove()
-
-  res.status(200).json(strain)
 })
 
 
 // @desc    Update a strain
-// @route   PUT /api/strains/:id
-// @access  Public
+// @route   PUT /strains/:id
+// @access  Private
 const updateStrain = asyncHandler( async (req, res) => {
-  const strain = await Strain.findById(req.params.id, req.body)
+  try {
+    const strain = await Strain.findById(req.params.id, req.body)
 
-  if (!strain) {
-    return res.status(400).json({error: 'Strain not found!'})
+    if (!strain) {
+      return res.json({error: 'Strain not found!'})
+    }
+
+    const updatedStrain = await Strain.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    })
+
+    res.json({
+      updatedStrain,
+      message: 'Strain updated'
+    })
+  } catch (error) {
+    
   }
-
-  const updatedStrain = await Strain.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  })
-
-  res.status(200).json(updatedStrain)
+  
 })
 
 
 module.exports = {
-  getStrains,
+  getAllStrains,
   getStrainByUser,
   getStrain,
   addStrain,

@@ -4,7 +4,7 @@ const router = express.Router();
 const { auth } = require('../middleware/auth')
 
 const {
-    getStrains,
+    getAllStrains,
     getStrainByUser,
     getStrain,
     addStrain,
@@ -12,14 +12,14 @@ const {
     updateStrain,
 } = require('../controllers/strainController');
 
-// GET all strain collection
-router.get('/', getStrains)
+// GET all strains
+router.get('/', getAllStrains)
 
 // GET strains by user
-router.get('/collection', auth,  getStrainByUser)
+router.get('/collection', auth, getStrainByUser)
 
 // GET a strain
-router.get('/:id', auth,  getStrain)
+router.get('/:id', auth, getStrain)
 
 // POST a new strain
 router.post('/', auth, addStrain)
