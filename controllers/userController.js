@@ -64,7 +64,7 @@ const signupUser = asyncHandler ( async (req, res) => {
 				message: 'User account successfuly created'
 			})
 		} else {
-			return res.json({ message: 'Sign up failed' })
+			return res.json({ error: 'Sign up failed' })
 		}
 	} catch (error) {
 		console.log(error)
@@ -77,7 +77,7 @@ const signupUser = asyncHandler ( async (req, res) => {
 // @route   POST /users/login
 // @access  Public
 const loginUser = asyncHandler ( async (req, res) => {
-	try {
+	
 		const { email, password } = req.body
 
 		// Check if user (email) exists
@@ -101,10 +101,6 @@ const loginUser = asyncHandler ( async (req, res) => {
 		} else {
 			return res.json({ error: 'Invalid credentials' })
 		}
-
-	} catch (error) {
-		console.log(error)
-	}
 })
 
 // @desc    Logout user, clear cookies
