@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken')
 
 // JWT Generation
-const generateToken = (res, userId) => {
-  const token = jwt.sign({ userId }, process.env.JWT_SECRET_CODE, {
+const generateToken = (res, id) => {
+  const token = jwt.sign({ id }, process.env.JWT_SECRET_CODE, {
     expiresIn: '1d',
   })
   
