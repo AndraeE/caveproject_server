@@ -9,9 +9,7 @@ const StrainSchema = mongoose.Schema(
 
 		// Taxonomic Details
 		strain_name: String, 
-		type_strain: { type: Boolean, default: false },
 		scientific_name: String,
-		
 		domain: String,
 		phylum: String,
 		class_name: String,
@@ -26,7 +24,7 @@ const StrainSchema = mongoose.Schema(
 		sampling_point: String,
 		sample_type: String,
 		host_species: String,
-		city_province: String,
+		town_province: String,
 		location_abbr: String,
 		location_latitude: Number,
 		location_longitude: Number,

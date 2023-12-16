@@ -7,37 +7,36 @@ const User = require('../models/userModel')
 // @access  Public
 const getAllStrains = asyncHandler( async (req, res) => {
   try {
-    const strains = await Strain.find().lean()
+    const strains = await Strain.find()
 
     if(!strains?.length) {
-      return res.json({ message: 'No strains found' })
+      return res.json({ error: 'No strains found' })
     }
 
     // Add user's(contributor) name to each strains before sending the response 
     const strainsWithUser = await Promise.all(strains.map(async (strain) => {
-      const user = await User.findById(strain.user).lean().exec()
+      const user = await User.findById(strain.user).exec()
       return { ...strain, contributor: user.name }
     }))
 
-    res.json(strainsWithUser)
+    res.json(strains)
 
   } catch (error) {
     console.log(error)
     res.json({ error: error.message })
   }
-  
 })
 
 
 // @desc    get a strains by user/author
-// @route   GET /api/strains/collection
+// @route   GET /strains/collection
 // @access  Private
 const getStrainByUser = asyncHandler( async (req, res) => {
   try {
     const strains = await Strain.find({ user: req.user }).lean()
 
     if (!strains) {
-      return res.json({ message: 'No strains found' })
+      return res.json({ error: 'No strains found' })
     }
 
     res.json(strains)
@@ -57,7 +56,7 @@ const getStrain = asyncHandler( async (req, res) => {
     const strain = await Strain.findById(req.params.id)
 
     if (!strain) {
-      return res.json({ message: 'Strain not found!' })
+      return res.json({ error: 'Strain not found!' })
     }
 
     res.json({ strain, message:`Get strain ${req.params.id}`})
@@ -78,9 +77,8 @@ const addStrain = asyncHandler( async (req, res) => {
 
     const strain = await Strain.create({
       ...data,
-      user: req.user._id
+      user: req.user.id
     })
-
     
     res.json({
       strain,
@@ -100,12 +98,11 @@ const deleteStrain = asyncHandler( async (req, res) => {
   try {
     const strain = await Strain.findByIdAndDelete(req.params.id)
 
-    // if(!strain) {
-    //   return res.json({ message: 'Strain not found' })
-    // }
+    if(!strain) {
+      return res.json({ error: 'Strain not found' })
+    }
 
     res.json({
-      strain,
       message: 'Strain deleted'
     })
   } catch (error) {
@@ -135,7 +132,8 @@ const updateStrain = asyncHandler( async (req, res) => {
       message: 'Strain updated'
     })
   } catch (error) {
-    
+    console.log(error)
+    res.json({ error: error.message })
   }
   
 })

@@ -13,7 +13,7 @@ const {
 } = require('../controllers/strainController');
 
 // GET all strains
-router.get('/', getAllStrains)
+router.get('/', auth, getAllStrains)
 
 // GET strains by user
 router.get('/collection', auth, getStrainByUser)
