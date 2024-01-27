@@ -19,16 +19,18 @@ const StrainSchema = mongoose.Schema(
 		species: String,
 
 		// Isolation source Details
-		isolation_source: String,	//same with location information
-		sampling_site: String,
-		sampling_point: String,
-		sample_type: String,
+		sampling_site: String,		//cave name
+		sampling_point: String,		//cave site code
+		host_type: String,
 		host_species: String,
-		town_province: String,
+		sample_type: String,
+		isolate_id: String,
+		city_province: String,
 		location_abbr: String,
 		location_latitude: Number,
 		location_longitude: Number,
 		miso_categories: Array,
+		location_information: String,
 
 		// Strain Identifier
 		// accession_number: String,

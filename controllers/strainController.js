@@ -117,7 +117,7 @@ const deleteStrain = asyncHandler( async (req, res) => {
 // @access  Private
 const updateStrain = asyncHandler( async (req, res) => {
   try {
-    const strain = await Strain.findById(req.params.id, req.body)
+    const strain = await Strain.findById(req.params.id)
 
     if (!strain) {
       return res.json({error: 'Strain not found!'})
@@ -126,6 +126,7 @@ const updateStrain = asyncHandler( async (req, res) => {
     const updatedStrain = await Strain.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     })
+    // const updatedStrain = await Strain.findByIdAndUpdate(req.params.id, req.body)
 
     res.json({
       updatedStrain,
