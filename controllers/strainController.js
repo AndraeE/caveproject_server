@@ -59,7 +59,7 @@ const getStrain = asyncHandler( async (req, res) => {
       return res.json({ error: 'Strain not found!' })
     }
 
-    res.json({ strain, message:`Get strain ${req.params.id}`})
+    res.json(strain)
   } catch (error) {
     console.log(error)
     res.json({ error: error.message })
