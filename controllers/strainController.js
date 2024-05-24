@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const Strain = require('../models/strainModel')
 const User = require('../models/userModel')
+const Counter = require('../models/counterModel')
 
 // @desc    Get all strains
 // @route   GET /strains
@@ -74,16 +75,36 @@ const getStrain = asyncHandler( async (req, res) => {
 const addStrain = asyncHandler( async (req, res) => {
   try {
     const data = req.body
+    console.log(data)
+    // for auto-increment accession_no 
+    Counter.findOneAndUpdate(
+      { id: 'autocounter' },
+      { $inc: {counter:1} },
+      { new: true }
+    ).then( (counterdata, error) => {
+      let accessID;
+      if(counterdata == null) {
+        const count = new Counter({
+          id: 'autocounter',
+          counter: 50001
+        })
+        count.save()
+        accessID = 50001
+      } else {
+        accessID = counterdata.counter
+      }
 
-    const strain = await Strain.create({
-      ...data,
-      user: req.user.id
-    })
-    
-    res.json({
-      strain,
-      message: 'New strain added'
-    })
+      const strain = Strain.create({
+        ...data,
+        user: req.user.id,
+        accession_number: data.collection_name.concat('-',data.institution, '-', accessID.toString())
+      })
+
+      res.json({
+        strain,
+        message: 'New strain added'
+      })
+    })    
   } catch (error) {
     console.log(error)
     res.json({ error: error.message })

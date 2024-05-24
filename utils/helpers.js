@@ -16,6 +16,24 @@ const generateToken = (res, id) => {
 	return token
 }
 
+const fullAccessionCodeGenerator = (data) => {
+  const arrayData = [
+    data.collection_name,
+    data.institution,
+    data.project_code.
+    data.location_abbr,
+    data.sampling_site,
+    data.sampling_point,
+    data.type_description_code,
+    data.host_type,
+    data.sampling_type,
+    data.isolate_id
+  ]
+
+  return arrayData.filter( item => item != '').join('-')
+}
+
 module.exports = {
-	generateToken
+	generateToken,
+  fullAccessionCodeGenerator
 }
