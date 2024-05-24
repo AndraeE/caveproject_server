@@ -40,7 +40,7 @@ const StrainSchema = new mongoose.Schema(
 		location_information: String,
 
 		// Strain Identifier
-		isolation_id: String,					// isolation_code (change)
+		isolate_id: String,					// isolation_code (change)
 		database_id: Number,					// auto-increment
 		accession_number: String,			// database_id in String (concat MCC-MNH)
 		full_accession_code: String,	// backend generate
