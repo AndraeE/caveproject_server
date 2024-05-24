@@ -11,7 +11,8 @@ const getAllStrains = asyncHandler( async (req, res) => {
     const strains = await Strain.find()
 
     if(!strains?.length) {
-      return res.json({ error: 'No strains found' })
+      // return res.json({ error: 'No strains found' })
+      return res.json([])
     }
 
     // Add user's(contributor) name to each strains before sending the response 
@@ -37,7 +38,8 @@ const getStrainByUser = asyncHandler( async (req, res) => {
     const strains = await Strain.find({ user: req.user }).lean()
 
     if (!strains) {
-      return res.json({ error: 'No strains found' })
+      // return res.json({ strains:[], error: 'No strains found' })
+      res.json([])
     }
 
     res.json(strains)
