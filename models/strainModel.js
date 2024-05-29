@@ -27,8 +27,9 @@ const StrainSchema = new mongoose.Schema(
 		host_type: String,
 		host_species: String,
 		sampling_site: String,		//cave name
+		sampling_site_abbr: String,
 		sampling_point: String,		//cave site code
-		// sampling_date: Date,
+		sampling_date: Date,
 		municity: String,					// municipality/city
 		province: String,
 		// city_province: String,
@@ -36,6 +37,7 @@ const StrainSchema = new mongoose.Schema(
 		location_latitude: Number,
 		location_longitude: Number,
 		miso_categories: Array,
+		miso_categories_string: String,
 		storage_information: String,
 		location_information: String,
 
