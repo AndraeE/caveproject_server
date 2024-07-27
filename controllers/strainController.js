@@ -18,7 +18,7 @@ const getAllStrains = asyncHandler( async (req, res) => {
     // Add user's(contributor) name to each strains before sending the response 
     const strainsWithUser = await Promise.all(strains.map(async (strain) => {
       const user = await User.findById(strain.user).exec()
-      return { ...strain, contributor: user.name }
+      return { ...strain, contributor: user?.name }
     }))
 
     res.json(strains)
