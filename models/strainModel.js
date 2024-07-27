@@ -18,6 +18,16 @@ const StrainSchema = new mongoose.Schema(
 		genus: String,
 		species: String,
 
+		// Morphology Details
+		gram_stain: String,
+		cell_shape: String,
+		motility: String,
+
+		// Physiology and Metabolism Details
+		oxygen_tolerance: String,
+		presence_of_cytochrome_c_oxidase: String,
+		endospore_forming_capability: String,
+		antibiotic_resistance_profile: String,
 
 		// Isolation source Details
 		type_description: String,
